@@ -1,0 +1,38 @@
+---
+- name: Configuring yum and installing and configuring Httpd in Redhat
+  hosts: all
+  tasks:
+  - name: Creating mount directory
+    file:
+      state: "directory"
+      path: /dvd1
+  - name: Mounting Cd Rom
+    mount:
+      src: /dev/sr0
+      path: /dvd1
+      state: mounted
+      fstype: iso9660
+  - name: Yum_repo_AppStream
+    yum_repository:
+      baseurl: file:///dvd1/AppStream
+      name: appstream
+      description: repo_appstream
+      file: httpd
+      gpgcheck: 0
+  - name: Yum_repo_BaseOs
+    yum_repository:
+      baseurl: file:///dvd1/BaseOs
+      name: baseos
+      description: repo_baseos
+      file: httpd
+      gpgcheck: 0
+  - name: Installing_Httpd
+    package: 
+      name: httpd
+      state: latest
+      skip_broken: yes
+  - name: Starting Httpd Service
+    service:
+      name: httpd 
+      state: started
+
